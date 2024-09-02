@@ -1,0 +1,28 @@
+services:
+  mongo:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    ports:
+      - "${DB_PORT}:27017"
+    volumes:
+      - mongo_volume:/data/db
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://${DB_HOST}:${DB_PORT}"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+    networks:
+      - default
+  backend:
+    ports: 
+      - "${PORT}:${PORT}"
+    build: .
+    env_file:
+      - .env
+    networks:
+      - default
+
+volumes:
+  mongo_volume:
